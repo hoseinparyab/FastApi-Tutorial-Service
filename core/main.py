@@ -52,7 +52,13 @@ def retrive_name_detail(name_id: int):
             return item
     return {"detail": "object not found"}
 
-
+@app.put("/names/{name_id}")
+def update_name_detail(name_id: int,name:str):
+    for item in name_list:
+        if item["id"] == name_id:
+            item["id"]= name
+            return item
+    return ("object not found..")
 @app.get("/")
 def root():
     return {"message": "Hello World"}
