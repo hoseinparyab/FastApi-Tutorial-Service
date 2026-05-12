@@ -1,6 +1,6 @@
 from imaplib import IMAP4
 from pathlib import Path
-import random 
+import random
 from fastapi import FastAPI, Request
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import HTMLResponse
@@ -37,12 +37,10 @@ def retrive_name_list():
 
 
 @app.post("/names")
-def create_name(name:str):
-    name_obj= {"id":random.randint(6,100),"name":name}
+def create_name(name: str):
+    name_obj = {"id": random.randint(6, 100), "name": name}
     name_list.append(name_obj)
     return name_obj
-
-
 
 
 @app.get("/names/{name_id}")
@@ -52,13 +50,25 @@ def retrive_name_detail(name_id: int):
             return item
     return {"detail": "object not found"}
 
+
 @app.put("/names/{name_id}")
-def update_name_detail(name_id: int,name:str):
+def update_name_detail(name_id: int, name: str):
     for item in name_list:
         if item["id"] == name_id:
-            item["id"]= name
+            item["id"] = name
             return item
-    return ("object not found..")
+    return {"detail": "object not found.."}
+
+
+@app.delete("/names/{name_id}")
+def delete_name(name_id: int):
+    for item in name_list:
+        if item["id"] == name_id:
+            name_list.remove(item)
+        return {"detail": "object deleted is done"}
+    return {"detail": "object not found.."}
+
+
 @app.get("/")
 def root():
     return {"message": "Hello World"}
