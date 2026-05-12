@@ -1,6 +1,7 @@
-from imaplib import IMAP4
+# from imaplib import IMAP4
 from pathlib import Path
 import random
+from typing import Optional
 from fastapi import FastAPI, Request
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import HTMLResponse
@@ -11,12 +12,14 @@ _STATIC_DIR = Path(__file__).resolve().parent / "static"
 app = FastAPI(docs_url=None)
 app.mount("/static", StaticFiles(directory=_STATIC_DIR), name="static")
 
-name_list = [
+names_list = [
     {"id": 1, "name": "ali"},
     {"id": 2, "name": "hosein"},
     {"id": 3, "name": "hasan"},
-    {"id": 1, "name": "reza"},
-    {"id": 1, "name": "roozbeh"},
+    {"id": 4, "name": "reza"},
+    {"id": 5, "name": "reza"},
+    {"id": 6, "name": "reza"},
+    {"id": 7, "name": "roozbeh"},
 ]
 
 
@@ -32,20 +35,22 @@ async def swagger_ui_html(request: Request) -> HTMLResponse:
 
 
 @app.get("/names")
-def retrive_name_list():
-    return name_list
+def retrive_names_list(q: Optional[str] = None):
+    if q:
+        return [item for item in names_list if item["name"] == q]
+    return names_list
 
 
 @app.post("/names")
 def create_name(name: str):
     name_obj = {"id": random.randint(6, 100), "name": name}
-    name_list.append(name_obj)
+    names_list.append(name_obj)
     return name_obj
 
 
 @app.get("/names/{name_id}")
 def retrive_name_detail(name_id: int):
-    for item in name_list:
+    for item in names_list:
         if item["id"] == name_id:
             return item
     return {"detail": "object not found"}
@@ -53,7 +58,7 @@ def retrive_name_detail(name_id: int):
 
 @app.put("/names/{name_id}")
 def update_name_detail(name_id: int, name: str):
-    for item in name_list:
+    for item in names_list:
         if item["id"] == name_id:
             item["id"] = name
             return item
@@ -62,9 +67,9 @@ def update_name_detail(name_id: int, name: str):
 
 @app.delete("/names/{name_id}")
 def delete_name(name_id: int):
-    for item in name_list:
+    for item in names_list:
         if item["id"] == name_id:
-            name_list.remove(item)
+            names_list.remove(item)
         return {"detail": "object deleted is done"}
     return {"detail": "object not found.."}
 
