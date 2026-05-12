@@ -1,5 +1,6 @@
+from imaplib import IMAP4
 from pathlib import Path
-
+import random 
 from fastapi import FastAPI, Request
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import HTMLResponse
@@ -35,9 +36,14 @@ def retrive_name_list():
     return name_list
 
 
-@app.get("/names")
-def retrive_name_list():
-    return name_list
+@app.post("/names")
+def create_name(name:str):
+    name_obj= {"id":random.randint(6,100),"name":name}
+    name_list.append(name_obj)
+    return name_obj
+
+
+
 
 @app.get("/names/{name_id}")
 def retrive_name_detail(name_id: int):
